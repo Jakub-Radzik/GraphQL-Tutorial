@@ -109,6 +109,28 @@ const Mutations = new GraphQLObjectType({
             return author.save();
          },
       },
+      updateAuthor: {
+         type: AuthorType,
+         args: {
+            id: {
+               type: new GraphQLNonNull(GraphQLID),
+            },
+            name: {
+               type: GraphQLString,
+            },
+            age: {
+               type: GraphQLInt,
+            },
+         },
+         resolve(parent, args) {
+            return Author.findByIdAndUpdate(args.id, {
+               $set: {
+                  name: args.name,
+                  age: args.age,
+               },
+            });
+         },
+      },
       addBook: {
          type: BookType,
          args: {
