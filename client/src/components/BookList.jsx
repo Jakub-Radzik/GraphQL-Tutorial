@@ -1,37 +1,32 @@
-import React from 'react';
-import { gql } from 'apollo-boost';
+import React, { useState } from 'react';
 import { graphql } from 'react-apollo';
-
-const getBooksQuery = gql`
-   {
-      books {
-         id
-         name
-         genre
-      }
-   }
-`;
+import { getBooksQuery } from '../queries/queries';
+import BookDetails from './BookDetails';
 
 function BookList(props) {
-   const { data } = props;
-
+   const [selected, setSelected] = useState(null);
    const heading = <h1>Books Listing</h1>;
+
+   const displayBooks = () => {
+      var data = props.data;
+      if (data.loading) {
+         return <div>Loading books...</div>;
+      } else {
+         return data.books.map(book => {
+            return (
+               <li key={book.id} onClick={() => setSelected(book.id)}>
+                  {book.name}
+               </li>
+            );
+         });
+      }
+   };
 
    return (
       <div>
          {heading}
-         <ul id='book-list'>
-            {data.books &&
-               data.books.map(book => {
-                  return (
-                     <li key={book.id} style={{ border: '1px solid black' }}>
-                        <p>{book.id}</p>
-                        <strong>{book.name}</strong>
-                        <p>{book.genre}</p>
-                     </li>
-                  );
-               })}
-         </ul>
+         <ul id='book-list'>{displayBooks()}</ul>
+         {selected && <BookDetails bookId={selected} />}
       </div>
    );
 }
